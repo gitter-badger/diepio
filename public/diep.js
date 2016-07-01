@@ -156,12 +156,12 @@ var sketchProc = function(processingInstance) {
             background(205); //Background Color
             pushMatrix();
             mapCamera.run(); //Map Camera
-            stroke(174); //Grid Background this line and the next 7 lines
+            stroke(179); //Grid Background this line and the next 7 lines
             strokeWeight(1);
-            for (var w = 0; w < world.w; w += 25) {
+            for (var w = 0; w < world.w; w += 22.5) {
                 line(w, 0, w, world.w);
             }
-            for (var h = 0; h < world.h; h += 25) {
+            for (var h = 0; h < world.h; h += 22.5) {
                 line(0, h, world.h, h);
             }
             player.run(); //The Player
