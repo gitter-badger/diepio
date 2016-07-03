@@ -9,8 +9,8 @@ var sketchProc = function(processingInstance) {
 
         /** World **/
         var world = {
-            w: 2000,
-            h: 2000,
+            w: 6000,
+            h: 6000,
         };
         var marginx = world.w - width / 2;
         var marginy = world.h - height / 2;
@@ -25,9 +25,9 @@ var sketchProc = function(processingInstance) {
             this.velocity.mult(this.speed);
         };
         Bullet.prototype.display = function() {
-            stroke(62);
+            stroke(85);
             strokeWeight(2.5);
-            fill(255, 0, 0);
+            fill(241,78,84);
             ellipse(this.position.x, this.position.y, 20, 20);
         };
         Bullet.prototype.update = function() {
@@ -64,9 +64,11 @@ var sketchProc = function(processingInstance) {
             popMatrix();
         };
         Square.prototype.update = function() {
-            this.r += random(0.5);
+            this.r += random(0.025);
         };
-        var square = new Square(world.w / 2 - 100, world.h / 2 - 100);
+        while(squares.length<150){
+            squares.push(new Square(random(0, world.w), random(0, world.h)));
+        }
 
         var Triangle = function(x, y) {
             this.pos = new PVector(x, y);
@@ -89,9 +91,11 @@ var sketchProc = function(processingInstance) {
             popMatrix();
         };
         Triangle.prototype.update = function() {
-            this.r += random(0.5);
+            this.r += random(0.025);
         };
-        var trianglee = new Triangle(world.w / 2 - 100, world.h / 2 + 100);
+        while(triangles.length<100){
+            triangles.push(new Triangle(random(0, world.w), random(0, world.h)));
+        }
 
         var Pentagon = function(x, y) {
             this.pos = new PVector(x, y);
@@ -115,9 +119,11 @@ var sketchProc = function(processingInstance) {
             popMatrix();
         };
         Pentagon.prototype.update = function() {
-            this.r += random(0.5);
+            this.r += random(0.025);
         };
-        var pentagon = new Pentagon(world.w / 2 + 125, world.h / 2);
+        while(pentagons.length<50){
+            pentagons.push(new Pentagon(random(0, world.w), random(0, world.h)));
+        }
 
         /** Player **/
         var keys = {};
@@ -136,6 +142,7 @@ var sketchProc = function(processingInstance) {
             this.screenx = 0;
             this.screenx = 0;
             this.reloadTime = 0;
+            this.shooting = false;
             this.stats = {
                 health: 100,
                 regeneration: 1,
@@ -194,32 +201,31 @@ var sketchProc = function(processingInstance) {
             if (this.pos.x <= marginx) {
                 this.pmx = 0;
             }
-            if (mouseIsPressed && this.reloadTime === 0) {
-                bullets.push(new Bullet(new PVector(this.pos.x,
-                    this.pos.y), new PVector(mouseX -
-                    this.screenx, mouseY - this.screeny
-                ), this.stats.bulletSpeed));
+            if (this.shooting && this.reloadTime === 0) {
+                bullets.push(new Bullet(new PVector(this.pos.x, this.pos.y), new PVector(mouseX - this.screenx, mouseY - this.screeny), this.stats.bulletSpeed));
                 this.reloadTime = this.stats.reload;
-                lastMS = millis() - startMS + this.stats.reload *
-                    100;
+                lastMS = millis() - startMS + this.stats.reload * 100;
             }
         };
         var player = new Player(world.w / 2, world.h / 2);
 
         /** Minimap **/
-        var miniMap = function(x, y, x2, y2) {
-            this.pos = new PVector(x, y);
+        var miniMap = function(x, y) {
+            this.pos = new PVector(width - 135, height - 135);
         };
         miniMap.prototype.run = function() {
             this.display();
         };
         miniMap.prototype.display = function() {
+            if (this.pos.x < width - 135 || this.pos.x > width - 135 || this.pos.y < height - 135 || this.pos.y > height - 135){
+                this.pos.set(width - 135, height - 135);
+            }
             stroke(100);
             strokeWeight(5);
             fill(207, 207, 207, 200);
             rect(this.pos.x, this.pos.y, 125, 125);
         };
-        var minimap = new miniMap(width - 135, height - 135, player.pos.x, player.pos.y);
+        var minimap = new miniMap(player.pos.x, player.pos.y);
 
         /** Map Camera **/
         var mapCamera = {
@@ -240,6 +246,7 @@ var sketchProc = function(processingInstance) {
 
         /** Draw Function **/
         var draw = function() {
+            size(window.innerWidth, window.innerHeight);
             background(205); //Background Color
             pushMatrix();
             mapCamera.run(); //Map Camera
@@ -251,9 +258,15 @@ var sketchProc = function(processingInstance) {
             for (var h = 0; h < world.h; h += 22.5) {
                 line(0, h, world.h, h);
             }
-            square.run(); //A Square
-            trianglee.run(); //A Triangle
-            pentagon.run(); //A Pentagon
+            for (var i = 0; i < squares.length; i += 1) {
+                squares[i].run();
+            }
+            for (var i = 0; i < triangles.length; i += 1) {
+                triangles[i].run();
+            }
+            for (var i = 0; i < pentagons.length; i += 1) {
+                pentagons[i].run();
+            }
             for (var i = 0; i < bullets.length; i += 1) {
                 bullets[i].run();
             }
@@ -264,6 +277,14 @@ var sketchProc = function(processingInstance) {
                 player.reloadTime = 0;
             }
         };
+
+        /** Shooting Stuff **/
+        mousePressed = function(){
+            player.shooting = true;
+        };
+        mouseReleased = function() {
+            player.shooting = false;
+        }
     }
 };
 var canvas = document.getElementById("mycanvas");
