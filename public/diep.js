@@ -207,7 +207,7 @@ var sketchProc = function(processingInstance) {
                 lastMS = millis() - startMS + this.stats.reload * 100;
             }
         };
-        var player = new Player(world.w / 2, world.h / 2);
+        var player = new Player(random(width, world.w-width), random(height, world.h-height));
 
         /** Minimap **/
         var miniMap = function(x, y) {
