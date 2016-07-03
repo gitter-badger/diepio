@@ -2,10 +2,8 @@
 var sketchProc = function(processingInstance) {
     with(processingInstance) {
         size(window.innerWidth, window.innerHeight);
-        //Code Goes Here
 
-        frameRate(30); //Set The Frame Rate
-
+        frameRate(60); //Set The Frame Rate
         var startMS = millis();
         var lastMS = 0;
 
@@ -47,7 +45,7 @@ var sketchProc = function(processingInstance) {
 
         var Square = function(x, y) {
             this.pos = new PVector(x, y);
-            this.r = 0;
+            this.r = random(0, 360);
             this.w = 35;
             this.h = 35;
         };
@@ -66,31 +64,60 @@ var sketchProc = function(processingInstance) {
             popMatrix();
         };
         Square.prototype.update = function() {
-            this.r += random(0.1, 1);
+            this.r += random(0.5);
         };
         var square = new Square(world.w / 2 - 100, world.h / 2 - 100);
 
         var Triangle = function(x, y) {
             this.pos = new PVector(x, y);
-            this.r = 0;
+            this.r = random(0, 360);
+            this.w = 20;
+            this.h = 20;
         };
         Triangle.prototype.run = function() {
             this.display();
             this.update();
         };
-        Triangle.prototype.display = function() {};
-        Triangle.prototype.update = function() {};
+        Triangle.prototype.display = function() {
+            pushMatrix();
+            translate(this.pos.x, this.pos.y);
+            rotate(this.r);
+            stroke(85);
+            strokeWeight(4);
+            fill(252, 118, 119);
+            triangle(0, 0 - this.h / 1.25, 0 - this.w, 0 + this.h, 0 + this.w, 0 + this.h);
+            popMatrix();
+        };
+        Triangle.prototype.update = function() {
+            this.r += random(0.5);
+        };
+        var trianglee = new Triangle(world.w / 2 - 100, world.h / 2 + 100);
 
         var Pentagon = function(x, y) {
             this.pos = new PVector(x, y);
-            this.r = 0;
+            this.r = random(0, 360);
+            this.w = 35;
+            this.h = 35;
         };
         Pentagon.prototype.run = function() {
             this.display();
             this.update();
         };
-        Pentagon.prototype.display = function() {};
-        Pentagon.prototype.update = function() {};
+        Pentagon.prototype.display = function() {
+            pushMatrix();
+            translate(this.pos.x, this.pos.y);
+            rotate(this.r);
+            stroke(85);
+            strokeWeight(4);
+            fill(118, 141, 252);
+            beginShape();
+            endShape();
+            popMatrix();
+        };
+        Pentagon.prototype.update = function() {
+            this.r += random(0.5);
+        };
+        var pentagon = new Pentagon(world.w / 2 + 125, world.h / 2);
 
         /** Player **/
         var keys = {};
@@ -113,11 +140,11 @@ var sketchProc = function(processingInstance) {
                 health: 100,
                 regeneration: 1,
                 bodyDamage: 1,
-                bulletSpeed: 10,
+                bulletSpeed: 5,
                 bulletPenetration: 1,
                 bulletDamage: 1,
                 reload: 1,
-                movementSpeed: 5,
+                movementSpeed: 2.5,
             };
         };
         Player.prototype.run = function() {
@@ -129,7 +156,8 @@ var sketchProc = function(processingInstance) {
             strokeWeight(2.5);
             pushMatrix();
             translate(this.pos.x, this.pos.y);
-            rotate(atan2(mouseY - height / 2, mouseX - width / 2) + ( -width + -height / 2));
+            rotate(atan2(mouseY - height / 2, mouseX - width / 2) +
+                (-width + -height / 2));
             fill(153);
             rect(-8.75, 5, 17.5, 35);
             popMatrix();
@@ -167,17 +195,20 @@ var sketchProc = function(processingInstance) {
                 this.pmx = 0;
             }
             if (mouseIsPressed && this.reloadTime === 0) {
-                bullets.push(new Bullet(new PVector(this.pos.x, this.pos.y), new PVector(mouseX - this.screenx, mouseY - this.screeny ), this.stats.bulletSpeed));
+                bullets.push(new Bullet(new PVector(this.pos.x,
+                    this.pos.y), new PVector(mouseX -
+                    this.screenx, mouseY - this.screeny
+                ), this.stats.bulletSpeed));
                 this.reloadTime = this.stats.reload;
-                lastMS = millis() - startMS + this.stats.reload * 1000;
+                lastMS = millis() - startMS + this.stats.reload *
+                    100;
             }
         };
         var player = new Player(world.w / 2, world.h / 2);
+
         /** Minimap **/
         var miniMap = function(x, y, x2, y2) {
             this.pos = new PVector(x, y);
-            this.x = x2;
-            this.y = y2;
         };
         miniMap.prototype.run = function() {
             this.display();
@@ -187,12 +218,9 @@ var sketchProc = function(processingInstance) {
             strokeWeight(5);
             fill(207, 207, 207, 200);
             rect(this.pos.x, this.pos.y, 125, 125);
-            stroke(0, 139, 139);
-            point(this.x, this.y);
-            this.x = constrain(this.x, this.pos.x, this.pos.x + 125);
-            this.y = constrain(this.y, this.pos.y, this.pos.y + 125);
         };
-        var minimap = new miniMap(width - 135, height - 135, player.pos .x, player.pos.y);
+        var minimap = new miniMap(width - 135, height - 135, player.pos.x, player.pos.y);
+
         /** Map Camera **/
         var mapCamera = {
             pos: new PVector(player.pos.x, player.pos.y),
@@ -202,13 +230,14 @@ var sketchProc = function(processingInstance) {
             oy: 0,
             run: function() {
                 this.pos.x = constrain(this.pos.x + (width / 2 - player.pos.x - this.pos.x) / 5, this.right, 0);
-                this.pos.y = constrain(this.pos.y + (height / 2 - player.pos.y - this.pos.y) / 5, this.bottom, 0);
+                this.pos.y = constrain(this.pos.y + (height / 2 -   player.pos.y - this.pos.y) / 5, this.bottom, 0);
                 translate(this.pos.x, this.pos.y);
                 translate(player.pmx, player.pmy);
                 player.screenx = player.pos.x + this.pos.x + player.pmx;
                 player.screeny = player.pos.y + this.pos.y + player.pmy;
             }
         };
+
         /** Draw Function **/
         var draw = function() {
             background(205); //Background Color
@@ -223,6 +252,8 @@ var sketchProc = function(processingInstance) {
                 line(0, h, world.h, h);
             }
             square.run(); //A Square
+            trianglee.run(); //A Triangle
+            pentagon.run(); //A Pentagon
             for (var i = 0; i < bullets.length; i += 1) {
                 bullets[i].run();
             }
