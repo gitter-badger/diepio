@@ -24,6 +24,10 @@ var sketchProc = function(processingInstance) {
             this.velocity.normalize();
             this.velocity.mult(this.speed);
         };
+        Bullet.prototype.run = function() {
+            this.display();
+            this.update();
+        };
         Bullet.prototype.display = function() {
             stroke(85);
             strokeWeight(2.5);
@@ -33,10 +37,7 @@ var sketchProc = function(processingInstance) {
         Bullet.prototype.update = function() {
             this.position.add(this.velocity);
         };
-        Bullet.prototype.run = function() {
-            this.display();
-            this.update();
-        };
+
 
         /** Enemies **/
         var squares = [];
@@ -163,8 +164,7 @@ var sketchProc = function(processingInstance) {
             strokeWeight(2.5);
             pushMatrix();
             translate(this.pos.x, this.pos.y);
-            rotate(atan2(mouseY - height / 2, mouseX - width / 2) +
-                (-width + -height / 2));
+            rotate(atan2(mouseY - height / 2, mouseX - width / 2) + (-width + -height / 2));
             fill(153);
             rect(-8.75, 5, 17.5, 35);
             popMatrix();
