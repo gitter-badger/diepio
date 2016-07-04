@@ -7,10 +7,16 @@ var sketchProc = function(processingInstance) {
         var startMS = millis();
         var lastMS = 0;
 
-        /** World **/
+        /** W orld **/
         var world = {
-            w: 6000,
-            h: 6000,
+            w: 6000, //World Width
+            h: 6000, //World Height
+            minimumSquares: 75, //Minimum Amount Of Squares
+            minimumTriangles: 50, //Minimum Amount Of Triangles
+            minimumPentagons: 10, //Minimum Amount Of Pentagons
+            maxSquares: 150, //Maximum Amount Of Squares
+            maxTriangles: 100, //Maximum Amount Of Triangles
+            maxPentagons: 50, //Maximum Amount Of Pentagons
         };
         var marginx = world.w - width / 2;
         var marginy = world.h - height / 2;
@@ -37,7 +43,6 @@ var sketchProc = function(processingInstance) {
         Bullet.prototype.update = function() {
             this.position.add(this.velocity);
         };
-
 
         /** Enemies **/
         var squares = [];
@@ -67,7 +72,7 @@ var sketchProc = function(processingInstance) {
         Square.prototype.update = function() {
             this.r += random(0.025);
         };
-        while(squares.length<150){
+        while(squares.length<world.maxSquares){
             squares.push(new Square(random(0, world.w), random(0, world.h)));
         }
 
@@ -94,7 +99,7 @@ var sketchProc = function(processingInstance) {
         Triangle.prototype.update = function() {
             this.r += random(0.025);
         };
-        while(triangles.length<100){
+        while(triangles.length<world.maxTriangles){
             triangles.push(new Triangle(random(0, world.w), random(0, world.h)));
         }
 
@@ -122,7 +127,7 @@ var sketchProc = function(processingInstance) {
         Pentagon.prototype.update = function() {
             this.r += random(0.025);
         };
-        while(pentagons.length<50){
+        while(pentagons.length<world.maxPentagons){
             pentagons.push(new Pentagon(random(0, world.w), random(0, world.h)));
         }
 
@@ -172,30 +177,28 @@ var sketchProc = function(processingInstance) {
             ellipse(this.pos.x, this.pos.y, this.w, this.h);
         };
         Player.prototype.update = function() {
-            if (keys[UP] && this.pos.y > 0) {
+            if(keys[UP] || keys[87] && this.pos.y > 0){
                 this.pos.sub(0, this.stats.movementSpeed);
-                if (this.pos.y >= marginy && this.pos.y <= marginy +
-                    this.pmy) {
-                    this.pmy -= 5;
+                if(this.pos.y>=marginy&&this.pos.y<=marginy+this.pmy){
+                    this.pmy-=5;
                 }
             }
-            if (keys[DOWN] && this.pos.y < world.h) {
+            if(keys[DOWN] || keys[83] && this.pos.y < world.h){
                 this.pos.add(0, this.stats.movementSpeed);
-                if (this.pos.y >= marginy + this.pmy) {
-                    this.pmy += 5;
+                if(this.pos.y>=marginy+this.pmy){
+                    this.pmy+=5;
                 }
             }
-            if (keys[RIGHT] && this.pos.x < world.w) {
+            if(keys[RIGHT] || keys[68] && this.pos.x < world.w){
                 this.pos.add(this.stats.movementSpeed, 0);
-                if (this.pos.x >= marginx + this.pmx) {
-                    this.pmx += 5;
+                if(this.pos.x>=marginx+this.pmx){
+                    this.pmx+=5;
                 }
             }
-            if (keys[LEFT] && this.pos.x > 0) {
+            if(keys[LEFT] || keys[65] && this.pos.x > 0){
                 this.pos.sub(this.stats.movementSpeed, 0);
-                if (this.pos.x >= marginx && this.pos.x <= marginx +
-                    this.pmx) {
-                    this.pmx -= 5;
+                if(this.pos.x>=marginx&&this.pos.x<=marginx+this.pmx){
+                    this.pmx-=5;
                 }
             }
             if (this.pos.x <= marginx) {
