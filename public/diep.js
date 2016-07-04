@@ -106,23 +106,29 @@ var sketchProc = function(processingInstance) {
         var Pentagon = function(x, y) {
             this.pos = new PVector(x, y);
             this.r = random(0, 360);
-            this.w = 35;
-            this.h = 35;
+            this.w = 60;
+            this.h = 60;
         };
         Pentagon.prototype.run = function() {
             this.display();
             this.update();
         };
         Pentagon.prototype.display = function() {
-            pushMatrix();
-            translate(this.pos.x, this.pos.y);
-            rotate(this.r);
-            stroke(85);
-            strokeWeight(4);
-            fill(118, 141, 252);
-            beginShape();
-            endShape();
-            popMatrix();
+          pushMatrix();
+          translate(this.pos.x, this.pos.y);
+          rotate(this.r);
+          stroke(85);
+          strokeWeight(4);
+          fill(118,141,252);
+          beginShape();
+          vertex(0,0-this.h/2);
+          vertex(0+this.w/2,0-this.h/8);
+          vertex(0+this.w/3,0+this.h/2);
+          vertex(0-this.w/3,0+this.h/2);
+          vertex(0-this.w/2,0-this.h/8);
+          vertex(0,0-this.h/2);
+          endShape();
+          popMatrix();
         };
         Pentagon.prototype.update = function() {
             this.r += random(0.025);
